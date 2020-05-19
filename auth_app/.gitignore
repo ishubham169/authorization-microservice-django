@@ -2,3 +2,4 @@ env/*
 config*
 .idea/*
 ../.idea/
+*.sqlite3

@@ -11,10 +11,11 @@ user_manager_obj = UserManager()
 @api_view(['POST'])
 @exception_handler
 def login(request):
-    headers = request.header
-    authorization = headers.get("Authorization")
-    if not authorization:
-        raise CustomException.UnAuthorizeException()
+    headers, payload = request.META, request.data.dict()
+    authorization = headers.get('Authorization')
+    email, password = payload.get('email_id') or '', payload.get('password') or ''
+    auth_token = UserManager.get_auth_token(email, password, authorization)
+    return {"Authorization": auth_token, "data": "Logged-in"}
 
 
 @api_view(['POST'])
@@ -28,4 +29,4 @@ def sign_up(request):
     user_fields['auth_token'] = auth_token
     user_obj = Users(**user_fields)
     user_obj.save()
-    return {"Authorization": auth_token, "data": "Signed-In"}
+    return {"Authorization": auth_token, "data": "Welcome User"}

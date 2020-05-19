@@ -1,5 +1,6 @@
 
 class CustomException:
+
     class NotFoundException(Exception):
         pass
 

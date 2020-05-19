@@ -16,9 +16,14 @@ with open('./config.json') as d:
 def exception_handler(func):
     def wrapper(*args, **kwargs):
         try:
-            data = func(*args, **kwargs)
-            return Response({"is_success": True, "data": data.get('data')},
-                            headers={"Authorization": "Bearer " + data.get('Authorization')})
+            result = func(*args, **kwargs)
+            data, response, headers = result.get('data') or '', {"is_success": True}, {}
+            if data:
+                response.update({"data": data})
+            auth_token = result.get('Authorization') or {}
+            if auth_token:
+                headers = {"Authorization": auth_token}
+            return Response(response, headers=headers)
         except CustomException.ValidationError as ae:
             return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_400_BAD_REQUEST,
                             content_type="application/json")
@@ -65,10 +70,22 @@ def generate_jwt(data):
     return jwt.encode(payload, config['SECRET_KEY'], algorithm="HS256").decode('utf-8')
 
 
-def hash_pass(data):
+def encode(data):
     return base64.b64encode(str(data).encode("utf-8")).decode('utf-8')
+
+
+def decode(data):
+    return base64.b64decode(data.encode("utf-8")).decode("utf-8")
 
 
 def get_current_epoch():
     return int(time.time())
+
+
+def is_token_expired(token):
+    data = json.loads(decode(token))
+    expires = data['expires']
+    return False if get_current_epoch() - expires > 0 else True
+
+
 
