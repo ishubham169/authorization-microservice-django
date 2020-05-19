@@ -64,7 +64,7 @@ def get_error_dict(error):
 def generate_jwt(data):
     payload = data.copy()
     payload['iat'] = get_current_epoch()
-    now = datetime.datetime.now() + datetime.timedelta(minutes=config['JWT_EXPIRY_MINUTES'])
+    now = datetime.datetime.now() + datetime.timedelta(minutes=config['TOKEN_EXPIRY_MINUTES'])
     payload['expires'] = int(time.mktime(now.timetuple()))
     payload.pop('password')
     return jwt.encode(payload, config['SECRET_KEY'], algorithm="HS256").decode('utf-8')
