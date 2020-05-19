@@ -54,11 +54,12 @@ class UserManager:
             else:
                 return auth_token
         else:
+            verify_jwt(authorization)
             try:
-                auth_token = is_token_expired(authorization.split('.')[1])
+                is_token_valid = is_token_expired(authorization.split('.')[1])
             except Exception:
                 raise CustomException.UnAuthorizeException("Not Authorized")
-            if is_token_expired(auth_token):
-                return auth_token
+            if is_token_valid:
+                return authorization
             else:
                 raise CustomException.UnAuthorizeException("Not Authorized")

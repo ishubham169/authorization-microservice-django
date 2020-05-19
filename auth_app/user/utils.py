@@ -7,7 +7,6 @@ import json
 import base64
 import time
 import datetime
-from .models import Users
 
 with open('./config.json') as d:
     config = json.load(d)
@@ -25,19 +24,24 @@ def exception_handler(func):
                 headers = {"Authorization": auth_token}
             return Response(response, headers=headers)
         except CustomException.ValidationError as ae:
-            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_400_BAD_REQUEST,
+            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
+                            status=status.HTTP_400_BAD_REQUEST,
                             content_type="application/json")
         except CustomException.ForbiddenException as ae:
-            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_403_FORBIDDEN,
+            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
+                            status=status.HTTP_403_FORBIDDEN,
                             content_type="application/json")
         except CustomException.UnAuthorizeException as ae:
-            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_401_UNAUTHORIZED,
+            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
+                            status=status.HTTP_401_UNAUTHORIZED,
                             content_type="application/json")
         except CustomException.UserNotVerified as ae:
-            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_401_UNAUTHORIZED,
+            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
+                            status=status.HTTP_401_UNAUTHORIZED,
                             content_type="application/json")
         except CustomException.InvalidException as ae:
-            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])}, status=status.HTTP_400_BAD_REQUEST,
+            return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
+                            status=status.HTTP_400_BAD_REQUEST,
                             content_type="application/json")
         except Exception as ae:
             return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
@@ -88,4 +92,8 @@ def is_token_expired(token):
     return False if get_current_epoch() - expires > 0 else True
 
 
-
+def verify_jwt(token):
+    try:
+        jwt.decode(token, config['SECRET_KEY'], algorithms="HS256")
+    except Exception:
+        raise CustomException.UnAuthorizeException("UnAuthorised")

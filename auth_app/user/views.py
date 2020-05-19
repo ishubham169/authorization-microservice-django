@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view
 from .utils import *
 from .models import Users
-from .exceptions import CustomException
 import datetime
 from .managers.user_manager import UserManager
 
@@ -11,8 +10,8 @@ user_manager_obj = UserManager()
 @api_view(['POST'])
 @exception_handler
 def login(request):
-    headers, payload = request.META, request.data.dict()
-    authorization = headers.get('Authorization')
+    headers, payload = request.META, request.data
+    authorization = headers.get('HTTP_AUTHORIZATION')
     email, password = payload.get('email_id') or '', payload.get('password') or ''
     auth_token = UserManager.get_auth_token(email, password, authorization)
     return {"Authorization": auth_token, "data": "Logged-in"}

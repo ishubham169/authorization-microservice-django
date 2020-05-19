@@ -1,9 +1,7 @@
 from django.db import models
-from django.core.validators import MinLengthValidator, RegexValidator
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .exceptions import CustomException
-import uuid
 
 
 class Users(models.Model):
@@ -22,4 +20,3 @@ class Users(models.Model):
         except ValidationError as e:
             raise CustomException.ValidationError(e)
         super().save(*args, **kwargs)
-
