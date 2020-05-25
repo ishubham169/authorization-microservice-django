@@ -20,7 +20,7 @@ def login(request):
 @api_view(['POST'])
 @exception_handler
 def sign_up(request):
-    payload = request.data.dict()
+    payload = dict(request.data)
     user_manager_obj.validate_signup_payload(payload)
     user_fields = filter_user_fields(payload)
     user_fields['updated_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
