@@ -21,7 +21,8 @@ def exception_handler(func):
                 response.update({"data": data})
             auth_token = result.get('Authorization') or {}
             if auth_token:
-                headers = {"Authorization": auth_token}
+                headers = {"Authorization": auth_token,
+                           "Access-Control-Expose-Headers": "Authorization"}
             return Response(response, headers=headers)
         except CustomException.ValidationError as ae:
             return Response({"is_success": False, "data": {}, "error": get_error_dict(ae.args[0])},
