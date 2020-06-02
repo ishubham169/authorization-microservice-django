@@ -80,6 +80,8 @@ def encode(data):
 
 
 def decode(data):
+    if '===' not in data:
+        data = data + '==='
     return base64.b64decode(data.encode("utf-8")).decode("utf-8")
 
 
